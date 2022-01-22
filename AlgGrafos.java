@@ -216,19 +216,27 @@ public class AlgGrafos {
      */
     public static void criaVertice (String linha, Grafo grafo, boolean comecaComZero) {
         // Processa as informacoes da linha
-        String[] verticeInfo = linha.split(" = "); // [id, vizinhos]
+        String[] verticeInfo = linha.split("="); // [id, vertices adjacentes]
 
         // Processa o identificador do vertice
-        int id = Integer.parseInt(verticeInfo[0]);
+        int id = Integer.parseInt(String.valueOf(linha.charAt(0)));
         if (!comecaComZero) id--;
         grafo.addVertice(id);
 
         // Processa vertices adjacentes
-        int[] adj = Arrays.stream(verticeInfo[1].split(" ")).mapToInt(Integer::parseInt).toArray();
-        for (int verticeId : adj) {
-            if (!comecaComZero) verticeId--;
-            grafo.addAresta(id, verticeId);
-            grafo.setArestasCont(++arestasCont);
+        if (verticeInfo.length > 1) { // Se houverem vertices adjacentes
+            String[] adj = verticeInfo[1].split(" ");
+
+            if (Objects.equals(verticeInfo[1].split(" ")[0], "")) // se comecar com espaco, descarta o 1 item
+                adj = Arrays.copyOfRange(verticeInfo[1].split(" "), 1, verticeInfo[1].split(" ").length);
+
+            int[] adjToArray = Arrays.stream(adj).mapToInt(Integer::parseInt).toArray();
+
+            for (int verticeId : adjToArray) {
+                if (!comecaComZero) verticeId--;
+                grafo.addAresta(id, verticeId);
+                grafo.setArestasCont(++arestasCont);
+            }
         }
     }
 
